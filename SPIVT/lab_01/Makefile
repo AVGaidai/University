@@ -9,5 +9,5 @@ all:
 	$(CC) $(CFLAGS) -o $(FNAME2).out $(FNAME2).c
 	$(CC) $(CFLAGS) -o $(FNAME3).out $(FNAME3).c
 
-clear:
-	rm *.out
+clean:
+	rm *.out *.bin

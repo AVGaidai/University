@@ -27,35 +27,21 @@
  */
 #include <stdio.h>
 
-
-/*
- * Функция определения "бинарной длины" 
- * одного символа размером 1 байт
- */
-short int bival_length (char *val)
-{
-    /* Максимальная длина может равняться 8 битам */
-    short int length = 8;
-
-    /* Поиск первого ненулевого бита (слева направа) */
-    while ( !(*val >> (length - 1)) ) {
-        if ( !(--length) ) {
-            break;
-        }
-    }
-
-    return length;
-}
-
+#include "support_func.h"
 
 
 /*
  * Функция кодирования данных c помощью фи1
- * fin  - входной поток
- * fout - выходной поток
+ * in_file  - входной файл
+ * out_file - выходной файл
  */
-void fi_1_coding (FILE *fin, FILE *fout)
+void fi_1_coding (char *in_file, char *out_file)
 {
+    FILE *fin, *fout;
+
+    fin  = fopen (in_file, "rb");
+    fout = fopen (out_file, "wb");
+
     char c_8;     // Буфер для считывания порции данных (8 бит)
     char c = 0x0; // Буфер для записи закодированной последовательности (8 бит)
     int  i = 0;   // Счётчик записанных нулевых бит Х 8
@@ -142,6 +128,9 @@ void fi_1_coding (FILE *fin, FILE *fout)
     if (cur_bit_pos != 7) {
         fwrite (&c, 1, sizeof (char), fout);
     }
+
+    fclose (fin);
+    fclose (fout);
 }
 
 
@@ -149,11 +138,16 @@ void fi_1_coding (FILE *fin, FILE *fout)
 
 /*
  * Функция декодирования данных с помощью фи1
- * fin  - входной поток
- * fout - выходной поток
+ * in_file  - входной файл
+ * out_file - выходной файл
  */
-void fi_1_decoding (FILE *fin, FILE *fout)
+void fi_1_decoding (char *in_file, char *out_file)
 {
+    FILE *fin, *fout;
+
+    fin  = fopen (in_file, "rb");
+    fout = fopen (out_file, "wb");
+
     char c_8;     // Буфер для считывания порции данных (8 бит)
     char c = 0x0; // Буфер для записи декодированного символа в выходной файл
 
@@ -187,4 +181,7 @@ void fi_1_decoding (FILE *fin, FILE *fout)
             }
         }
     }
+
+    fclose (fin);
+    fclose (fout);
 }

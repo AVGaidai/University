@@ -1,11 +1,12 @@
 CC=gcc
 CFLAGS=-Wall -g
 FI=fi_0.c fi_1.c fi_2.c fi.h
+SF=support_func.c support_func.h
+
+MAIN=MTF
 
 all:
-	$(CC) $(CFLAGS) -o $(FNAME1).out $(FNAME1).c
-	$(CC) $(CFLAGS) -o $(FNAME2).out $(FNAME2).c
-	$(CC) $(CFLAGS) -o $(FNAME3).out $(FNAME3).c
+	$(CC) $(CFLAGS) -o $(MAIN).out $(MAIN).c $(FI) $(SF)
 
 clean:
 	rm -f *.out *.bin

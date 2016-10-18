@@ -27,11 +27,16 @@
 
 /*
  * Функция кодирования данных с помощью фи0
- * fin  - входной поток
- * fout - выходной поток
+ * in_file  - входной файл
+ * out_file - выходной файл
  */
-void fi_0_coding (FILE *fin, FILE *fout)
+void fi_0_coding (char *in_file, char *out_file)
 {
+    FILE *fin, *fout;
+
+    fin  = fopen (in_file, "rb");
+    fout = fopen (out_file, "wb");
+
     char c_8;     // Буфер для считывания порции данных (8 бит)
     char c = 0x0; // Буфер для записи закодированной последовательности (8 бит)
     int  i = 0;   // Счётчик записанных нулевых бит Х 8
@@ -77,17 +82,25 @@ void fi_0_coding (FILE *fin, FILE *fout)
     if (cur_bit_pos != -2) {
         fwrite (&c, 1, sizeof (char), fout);
     }
+
+    fclose (fin);
+    fclose (fout);
 }
 
 
 
 /*
  * Функция декодирования данных с помощью фи0
- * fin  - входной поток
- * fout - выходной поток
+ * in_file  - входной файл
+ * out_file - выходной файл
  */
-void fi_0_decoding (FILE *fin, FILE *fout)
+void fi_0_decoding (char *in_file, char *out_file)
 {
+    FILE *fin, *fout;
+
+    fin  = fopen (in_file, "rb");
+    fout = fopen (out_file, "wb");
+
     char c_8; // Буфер для считывания порции данных (8 бит)
     char c;   // Буфер для записи декодированного символа в выходной файл
 
@@ -108,5 +121,8 @@ void fi_0_decoding (FILE *fin, FILE *fout)
             }
         }
     }
+
+    fclose (fin);
+    fclose (fout);
 }
         

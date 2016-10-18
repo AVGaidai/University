@@ -1,16 +1,13 @@
 #ifndef FI_H
 #define FI_H
 
+void fi_0_coding (char *, char *);
+void fi_0_decoding (char *, char *);
 
-short int bival_length (char *);
+void fi_1_coding (char *, char *);
+void fi_1_decoding (char *, char *);
 
-void fi_0_coding (FILE *, FILE *);
-void fi_0_decoding (FILE *, FILE *);
-
-void fi_1_coding (FILE *, FILE *);
-void fi_1_decoding (FILE *, FILE *);
-
-void fi_2_coding (FILE *, FILE *);
-void fi_2_decoding (FILE *, FILE *);
+void fi_2_coding (char *, char *);
+void fi_2_decoding (char *, char *);
 
 #endif
