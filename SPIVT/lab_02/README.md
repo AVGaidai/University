@@ -15,16 +15,95 @@
 сообщение baadaade ... Покажем, как меняется порядок букв и какие числа формируются
 по мере поступления символов от источника.
 
-                 |
-Сообщение        | b a a d a a d e
------------------+-----------------
-                0| a b a a d a a d
-Позиции букв    1| b a b b a d d a
-в алфавите      2| c c c c b b b b
-                3| d d d d c c c c
-                4| e e e e e e e e
------------------+-----------------
-Код              | 1 1 0 3 1 0 1 4
+<table>
+ <tr>
+  <td>  Сообщение   </td>
+  <td>              </td>
+  <td> b            </td>
+  <td> a            </td>
+  <td> a            </td>
+  <td> d            </td>
+  <td> a            </td>
+  <td> a            </td>
+  <td> d            </td>
+  <td> e            </td>
+ </tr>
+ <tr>
+  <td>              </td>
+  <td> 0            </td>
+  <td> a            </td>
+  <td> b            </td>
+  <td> a            </td>
+  <td> a            </td>
+  <td> d            </td>
+  <td> a            </td>
+  <td> a            </td>
+  <td> d            </td>
+ </tr>
+ <tr>
+  <td>              </td>
+  <td> 1            </td>
+  <td> b            </td>
+  <td> a            </td>
+  <td> b            </td>
+  <td> b            </td>
+  <td> a            </td>
+  <td> d            </td>
+  <td> d            </td>
+  <td> a            </td>
+ </tr>
+ <tr>
+  <td> 
+   Позиция букв <br>
+   в алфавите
+  </td>
+  <td> 2            </td>
+  <td> c            </td>
+  <td> c            </td>
+  <td> c            </td>
+  <td> c            </td>
+  <td> b            </td>
+  <td> b            </td>
+  <td> b            </td>
+  <td> b            </td>
+ </tr>
+ <tr>
+  <td>              </td>
+  <td> 3            </td>
+  <td> d            </td>
+  <td> d            </td>
+  <td> d            </td>
+  <td> d            </td>
+  <td> c            </td>
+  <td> c            </td>
+  <td> c            </td>
+  <td> c            </td>
+ </tr>
+ <tr>
+  <td>              </td>
+  <td> 4            </td>
+  <td> e            </td>
+  <td> e            </td>
+  <td> e            </td>
+  <td> e            </td>
+  <td> e            </td>
+  <td> e            </td>
+  <td> e            </td>
+  <td> e            </td>
+ </tr>
+ <tr>
+  <td> Код          </td>
+  <td>              </td>
+  <td> 1            </td>
+  <td> 1            </td>
+  <td> 0            </td>
+  <td> 3            </td>
+  <td> 1            </td>
+  <td> 0            </td>
+  <td> 1            </td>
+  <td> 4            </td>
+ </tr>
+</table>
 
 Последовательность 11031014 еще не является "кодом": каждое из входящих в нее
 чисел необходимо закодировать.
