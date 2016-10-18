@@ -39,7 +39,7 @@ void fi_0_coding (FILE *fin, FILE *fout)
     short int c_16;   // Буфер для преобразования символа в число (16 бит)
   
     /* Текущая позиции обрабатываемого бита в буфере 'c' */
-    short int cur_bit_pos = -1;
+    short int cur_bit_pos = 7;
 
     /* Порционное считывание данных (по 1-ому байту) */
     while ( fread (&c_8, 1, sizeof (char), fin) ) {
@@ -55,7 +55,7 @@ void fi_0_coding (FILE *fin, FILE *fout)
                 cur_bit_pos = -2;
             } else {
                 c |= 1 << (cur_bit_pos - c_16);
-                cur_bit_pos -= c_16 - 1;
+                cur_bit_pos -= c_16 + 1;
                 continue;
             }
         }

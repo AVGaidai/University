@@ -113,7 +113,7 @@ void fi_2_coding (char *in_file, char *out_file)
         }
 
         /* Обработка оставшейся части кодируемого символа */
-        while (sub_length) {
+        while (sub_length > 0) {
             if ( (length >> (sub_length - 1)) & 1 ) {
                 c |= 1 << cur_bit_pos;
             } 
@@ -150,7 +150,7 @@ void fi_2_coding (char *in_file, char *out_file)
         }
 
         /* Обработка оставшейся части кодируемого символа */
-        while (length) {
+        while (length > 0) {
             if ( (c_8 >> (length - 1)) & 1 ) {
                 c |= 1 << cur_bit_pos;
             } 
@@ -234,7 +234,7 @@ void fi_2_decoding (char *in_file, char *out_file)
                 length = (short int) c;
                 /* Если закодирован ноль */
                 if (!length) {
-                    c1 = 0x1;
+                    c1 = 0x0;
                 /* Установка ведущего бита на позиции length (нумерация с 1) */
                 } else {
                     c1 |= 1 << (--length);

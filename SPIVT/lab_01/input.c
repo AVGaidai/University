@@ -1,6 +1,5 @@
 #include <stdio.h>
 
-
 void fi_0_coding (FILE *fin, FILE *fout)
 {
     char c_8;

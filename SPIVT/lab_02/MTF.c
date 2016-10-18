@@ -1,68 +1,37 @@
+/*
+ * Метод сжатия "Стопка книг"
+ * Промежуточная кодирвока с помощью фи2
+ */
 #include <stdio.h>
 #include <stdlib.h>
 
 #include <string.h>
 
-
 #include "fi.h"
-
-
-void swap_val (void *a, void *b, size_t size)
-{
-    void *tmp;
-
-    tmp = malloc (size);
-
-    memmove (tmp, a, size);
-    memmove (a, b, size);
-    memmove (b, tmp, size);
-
-    free (tmp);
-}
-
-
-void init_alph (char alph[256])
-{
-    for (int i = 0; i < 256; ++i) {
-        alph[i] = (char) i;
-    }
-}
-
-
-int find_into_alph (char alph[256], char val)
-{
-    for (int i = 0; i < 256; ++i) {
-        if (alph[i] == val) {
-            return i;
-        }
-    }
-
-    return -1;
-}
-
-
-void offset_alph (char alph[256], int pos)
-{
-    for (int i = pos; i > 0; --i) {
-        swap_val (&alph[i], &alph[i -1], sizeof (char));
-    }
-}
+#include "support_func.h"
 
 
 
+/*
+ * Функция сжатия и кодирования входного файла in_file
+ * Результат записывается в выходной файл out_file
+ * Для сжатия используется алфавит alph[256], 
+ * который инициализируется значениями ASCII таблицы
+ */
 int MTF_coding (char *in_file, char *out_file, char alph[256])
 {
     FILE *in, *out;
 
-    in  = fopen (in_file, "rb");
-    out = fopen ("tmp_cfile.bin", "wb");
+    in  = fopen (in_file, "rb");        // Входной файл
+    out = fopen ("tmp_file.bin", "wb"); // Времнный файл для сжатия
 
-    char buf;
-    int  pos;
+    char buf;   // Буффер
+    int  pos;   // Позиция считанного символа в текущем алфавите
        
-    init_alph (alph);
+    init_alph (alph);  // Инициализация алфавита
  
     while (fread (&buf, 1, sizeof (char), in)) {
+        /* Определение позции символа в алфавите */
         pos = find_into_alph (alph, buf);
         if (pos == -1) {
             fclose (in);
@@ -71,66 +40,61 @@ int MTF_coding (char *in_file, char *out_file, char alph[256])
             return -1;
         }
         buf = (char) pos;
+        /* Запись во временный файл позиции считанного символа */
         fwrite (&buf, 1, sizeof (char), out);
+        /* Сдвиг элементов алфавита согласно метода сжатия */
         offset_alph (alph, pos);
     }
 
     fclose (in);
     fclose (out);
 
-    fi_0_coding ("tmp_cfile.bin", out_file);
+    /* Кодирование сжатых данных с помощью функции фи2 */
+    fi_2_coding ("tmp_file.bin", out_file);
 
-//    remove ("./tmp_file.bin");
+    remove ("./tmp_file.bin");   // Удаление временного файла
 
     return 0;
 }
 
 
-
+/*
+ * Функция декодирования и восстановления данных
+ * по сжатому и закодированному файлу in_file
+ * Результат записывается в выходной файл out_file
+ * Для восстановления данных используется алфавит alph[256], 
+ * который инициализируется значениями ASCII таблицы
+ */
 int MTF_decoding (char *in_file, char *out_file, char alph[256])
 {
-    fi_0_decoding (in_file, "tmp_dfile.bin");
+    /* Декодирование данных с помощью функции фи2 */
+    fi_2_decoding (in_file, "tmp_file.bin");
 
     FILE *in, *out;
 
-    in  = fopen ("tmp_dfile.bin", "rb");
-    out = fopen (out_file, "wb");
+    in  = fopen ("tmp_file.bin", "rb"); // Временный файл для декодирования
+    out = fopen (out_file, "wb");       // Выходной файл
 
-    char buf;
-    int  pos;
+    char buf;   // Буффер
+    int  pos;   // Позиция считанного символа в текущем алфавите
 
-    init_alph (alph);
+    init_alph (alph); // Инициализация алфавита
+
 
     while (fread (&buf, 1, sizeof (char), in)) {
         pos = (int) buf;
+        /* Восстановление данных по алфавиту */
         fwrite (&alph[pos], 1, sizeof (char), out);
+        /* Сдвиг элементов алфавита согласно метода сжатия */
         offset_alph (alph, pos);
     }
 
     fclose (in);
     fclose (out);
 
-//    remove ("./tmp_file.bin");
+    remove ("./tmp_file.bin");   // Удаление временного файла
 
     return 0;
 }
 
 
-
-int main (int argc, char *argv[])
-{
-    if (argc < 4) {
-        return -1;
-    }
-
-    char alph[256];
-    int st;
-
-    st = MTF_coding (argv[1], argv[2], alph);
-
-    if (st == -1) return st;
-
-    st = MTF_decoding (argv[2], argv[3], alph);
-
-    return 0;
-}

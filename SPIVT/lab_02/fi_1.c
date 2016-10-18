@@ -102,7 +102,7 @@ void fi_1_coding (char *in_file, char *out_file)
         }
 
         /* Обработка оставшейся части кодируемого символа */
-        while (length) {
+        while (length > 0) {
             if ( (c_8 >> (length - 1)) & 1 ) {
                 c |= 1 << cur_bit_pos;
             } 
@@ -161,7 +161,7 @@ void fi_1_decoding (char *in_file, char *out_file)
             if ( (c_8 >> i) & 1 ) {
                 /* Если закодирован ноль */
                 if (!length) {
-                    c = 0x1;
+                    c = 0x0;
                 /* Декодировние символа*/
                 } else {
                     c |= 1 << (--length);
