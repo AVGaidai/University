@@ -18,20 +18,20 @@
 <table>
  <tr>
   <th colspan="2">  Сообщение   </th>
-  <td> b            </td>
-  <td> a            </td>
-  <td> a            </td>
-  <td> d            </td>
-  <td> a            </td>
-  <td> a            </td>
-  <td> d            </td>
-  <td> e            </td>
+  <th> b            </th>
+  <th> a            </th>
+  <th> a            </th>
+  <th> d            </th>
+  <th> a            </th>
+  <th> a            </th>
+  <th> d            </th>
+  <th> e            </th>
  </tr>
  <tr>
   <th rowspan="5"> 
    Позиция букв <br> в алфавите
   </th>
-  <td> 0            </td>
+  <th> 0            </th>
   <td> a            </td>
   <td> b            </td>
   <td> a            </td>
@@ -42,7 +42,7 @@
   <td> d            </td>
  </tr>
  <tr>
-  <td> 1            </td>
+  <th> 1            </th>
   <td> b            </td>
   <td> a            </td>
   <td> b            </td>
@@ -53,7 +53,7 @@
   <td> a            </td>
  </tr>
  <tr>
-  <td> 2            </td>
+  <th> 2            </th>
   <td> c            </td>
   <td> c            </td>
   <td> c            </td>
@@ -64,7 +64,7 @@
   <td> b            </td>
  </tr>
  <tr>
-  <td> 3            </td>
+  <th> 3            </th>
   <td> d            </td>
   <td> d            </td>
   <td> d            </td>
@@ -75,7 +75,7 @@
   <td> c            </td>
  </tr>
  <tr>
-  <td> 4            </td>
+  <th> 4            </th>
   <td> e            </td>
   <td> e            </td>
   <td> e            </td>
@@ -86,15 +86,15 @@
   <td> e            </td>
  </tr>
  <tr>
-  <th colspan="2"> Код </td>
-  <td> 1            </td>
-  <td> 1            </td>
-  <td> 0            </td>
-  <td> 3            </td>
-  <td> 1            </td>
-  <td> 0            </td>
-  <td> 1            </td>
-  <td> 4            </td>
+  <th colspan="2"> Код </th>
+  <th> 1            </th>
+  <th> 1            </th>
+  <th> 0            </th>
+  <th> 3            </th>
+  <th> 1            </th>
+  <th> 0            </th>
+  <th> 1            </th>
+  <th> 4            </th>
  </tr>
 </table>
 
