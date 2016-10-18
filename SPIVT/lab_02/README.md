@@ -17,8 +17,7 @@
 
 <table>
  <tr>
-  <td>  Сообщение   </td>
-  <td>              </td>
+  <th colspan="2">  Сообщение   </th>
   <td> b            </td>
   <td> a            </td>
   <td> a            </td>
@@ -29,7 +28,9 @@
   <td> e            </td>
  </tr>
  <tr>
-  <td>              </td>
+  <th rowspan="5"> 
+   Позиция букв <br> в алфавите
+  </th>
   <td> 0            </td>
   <td> a            </td>
   <td> b            </td>
@@ -41,7 +42,6 @@
   <td> d            </td>
  </tr>
  <tr>
-  <td>              </td>
   <td> 1            </td>
   <td> b            </td>
   <td> a            </td>
@@ -53,10 +53,6 @@
   <td> a            </td>
  </tr>
  <tr>
-  <td> 
-   Позиция букв <br>
-   в алфавите
-  </td>
   <td> 2            </td>
   <td> c            </td>
   <td> c            </td>
@@ -68,7 +64,6 @@
   <td> b            </td>
  </tr>
  <tr>
-  <td>              </td>
   <td> 3            </td>
   <td> d            </td>
   <td> d            </td>
@@ -80,7 +75,6 @@
   <td> c            </td>
  </tr>
  <tr>
-  <td>              </td>
   <td> 4            </td>
   <td> e            </td>
   <td> e            </td>
@@ -92,8 +86,7 @@
   <td> e            </td>
  </tr>
  <tr>
-  <td> Код          </td>
-  <td>              </td>
+  <th colspan="2"> Код </td>
   <td> 1            </td>
   <td> 1            </td>
   <td> 0            </td>
