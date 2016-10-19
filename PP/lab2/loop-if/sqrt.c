@@ -23,7 +23,22 @@ void compute_sqrt(float *in, float *out, int n)
 
 void compute_sqrt_avx(float *in, float *out, int n)
 {
-	// TODO
+    __m256 *A = (__m256 *) in;
+    __m256 *B = (__m256 *) out;
+
+    int k = n / 8;
+
+    __m256 zero = _mm256_setzero_ps ();
+    __m256 mask;
+    for (int i = 0; i < k; ++i) {
+        B[i] = _mm256_sqrt_ps (A[i]);
+        mask = _mm256_cmp_ps (B[i], zero, _CMP_GT_OQ);
+        B[i] = _mm256_blendv_ps (zero, B[i], mask);
+    }
+
+    for (int i = k * 8; i < n; ++i) {
+        out[i] = in[i] > 0 ? sqrtf (in[i]) : 0.0;
+    }
 }
 
 void *xmalloc(size_t size)
