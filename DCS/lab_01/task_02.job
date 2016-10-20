@@ -1,0 +1,7 @@
+#PBS -N out_file
+#PBS -l nodes=2:ppn=3
+#PBS -j oe
+
+cd $PBS_O_WORKDIR
+
+./Mul_Matrix.out 5 3 5
