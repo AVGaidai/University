@@ -16,7 +16,7 @@ int **matrix_init (int x, int y)
 
     for (int i = 0; i < x; ++i) {
         for (int j = 0; j < y; ++j) {
-            tmp[i][j] = rand () % 20;
+            tmp[i][j] = rand () % 5;
         }
     }
     

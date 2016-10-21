@@ -1,0 +1,73 @@
+
+cn1
+	state = down
+	power_state = Running
+
+cn2
+	state = free
+	power_state = Running
+
+cn3
+	state = free
+	power_state = Running
+
+cn4
+	state = free
+	power_state = Running
+
+cn5
+	state = free
+	power_state = Running
+
+cn6
+	state = free
+	power_state = Running
+
+cn7
+	state = free
+	power_state = Running
+
+cn8
+	state = free
+	power_state = Running
+
+cn9
+	state = free
+	power_state = Running
+
+cn10
+	state = free
+	power_state = Running
+
+cn11
+	state = free
+	power_state = Running
+
+cn12
+	state = free
+	power_state = Running
+
+cn13
+	state = free
+	power_state = Running
+
+cn14
+	state = free
+	power_state = Running
+
+cn15
+	state = free
+	power_state = Running
+
+cn16
+	state = free
+	power_state = Running
+
+cn17
+	state = down
+	power_state = Running
+
+cn18
+	state = down
+	power_state = Running
+
