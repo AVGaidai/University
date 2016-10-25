@@ -64,10 +64,10 @@ cn16
 	power_state = Running
 
 cn17
-	state = down
+	state = free
 	power_state = Running
 
 cn18
-	state = down
+	state = free
 	power_state = Running
 
