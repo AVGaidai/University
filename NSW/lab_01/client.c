@@ -69,6 +69,7 @@ int main (int argc, char *argv[])
         }
 
         r_bytes = fread (&fbuf, sizeof (int), 1, fp);
+        sleep (1);
     }
 
     fclose (fp);

@@ -3,10 +3,12 @@
 
 #include <string.h>
 
+#include <time.h>
+
 #include "UDP_FUNC.h"
 
 
-#define BUF_SIZE 32
+#define BUF_SIZE 20
 
 char IP_ADDR[16] = "127.0.0.1";
 
@@ -38,7 +40,7 @@ int main (int argc, char *argv[])
                                   sockfd, IP_ADDR, PORT );
 
 
-    char BUF[20];
+    char BUF[BUF_SIZE];
     char ipaddr[16];
 
     uint16_t port;
@@ -46,16 +48,15 @@ int main (int argc, char *argv[])
     int r_bytes;
     char answ = 0x1;
 
+    srand (time (NULL));
+
     while (1) {
         r_bytes = udp_recv_msg (sockfd, BUF, BUF_SIZE, ipaddr, &port);
 
-        printf ("recv bytes: %d\n", r_bytes);
+        if (rand () % 10 < 2) continue;
 
-        int data;
-        
-        memcpy (&data, BUF, sizeof (int));
-       
-        printf ("data: %d\n", data);
+        printf ("recv bytes: %d\n", r_bytes);       
+        printf ("data: %s\n", BUF);
         printf ("from \"%s:%hd\"\n", ipaddr, port);
 
         udp_send_msg (sockfd, ipaddr, port, &answ, port);
