@@ -50,7 +50,7 @@ int MTF_coding (char *in_file, char *out_file, char alph[256])
     fclose (out);
 
     /* Кодирование сжатых данных с помощью функции фи2 */
-    fi_2_coding ("tmp_file.bin", out_file);
+    fi_1_coding ("tmp_file.bin", out_file);
 
     remove ("./tmp_file.bin");   // Удаление временного файла
 
@@ -68,7 +68,7 @@ int MTF_coding (char *in_file, char *out_file, char alph[256])
 int MTF_decoding (char *in_file, char *out_file, char alph[256])
 {
     /* Декодирование данных с помощью функции фи2 */
-    fi_2_decoding (in_file, "tmp_file.bin");
+    fi_1_decoding (in_file, "tmp_file.bin");
 
     FILE *in, *out;
 
