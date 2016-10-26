@@ -6,7 +6,7 @@
 #include "UDP_FUNC.h"
 
 
-#define BUF_SIZE 20
+#define BUF_SIZE 32
 
 char IP_ADDR[16] = "127.0.0.1";
 
@@ -44,20 +44,23 @@ int main (int argc, char *argv[])
     uint16_t port;
 
     int r_bytes;
+    char answ = 0x1;
 
+    while (1) {
+        r_bytes = udp_recv_msg (sockfd, BUF, BUF_SIZE, ipaddr, &port);
 
-for (int i = 0; i < 4; ++i) {
-    r_bytes = udp_recv_msg (sockfd, BUF, BUF_SIZE, ipaddr, &port);
+        printf ("recv bytes: %d\n", r_bytes);
 
-    printf ("recv bytes: %d\n", r_bytes);
+        int data;
+        
+        memcpy (&data, BUF, sizeof (int));
+       
+        printf ("data: %d\n", data);
+        printf ("from \"%s:%hd\"\n", ipaddr, port);
 
-    int data;
-    
-    memcpy (&data, BUF, sizeof (int));
-   
-    printf ("data: %d\n", data);
-    printf ("from \"%s:%hd\"\n", ipaddr, port);
-}
+        udp_send_msg (sockfd, ipaddr, port, &answ, port);
+    }
+
     udp_sock_remove (sockfd);
 
     return 0;

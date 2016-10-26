@@ -5,9 +5,11 @@
 
 
 #include "UDP_FUNC.h"
+#include "support_func.h"
+#include "error.h"
+
 
 char IP_ADDR[16] = "127.0.0.1";
-
 uint16_t PORT = 7777;
 
 
@@ -35,14 +37,41 @@ int main (int argc, char *argv[])
                                   sockfd, IP_ADDR, PORT );
 
     int s_bytes;
+    int r_bytes;
 
-    for (int i = 0; i < 10; ++i) {
-        s_bytes = udp_send_msg ( sockfd, "127.0.0.1", 7778,
-                                 &sockfd, sizeof (int)      );
-    
-        printf ("send bytes: %d\n", s_bytes);
+    FILE *fp;
+
+    fp = fopen ("msg.bin", "rb");
+    if (fp <= 0) {
+        return udp_sock_remove (sockfd);
     }
 
+    set_recv_timer (sockfd, 2);
+
+    int  fbuf;
+    char answ;
+    
+    char ipaddr[16];
+    uint16_t port;
+
+    r_bytes = fread (&fbuf, sizeof (int), 1, fp);
+
+    while (r_bytes > 0) {
+        s_bytes = udp_send_msg ( sockfd, "127.0.0.1", 7778,
+                                 &fbuf, sizeof (int)        );
+        printf ("send bytes: %d\n", s_bytes);
+
+        r_bytes = udp_recv_msg ( sockfd, &answ, sizeof (char), ipaddr, &port);
+        if (r_bytes <= 0) {
+            r_bytes = 1;
+            print_info ("transmission failure!");
+            continue;
+        }
+
+        r_bytes = fread (&fbuf, sizeof (int), 1, fp);
+    }
+
+    fclose (fp);
     udp_sock_remove (sockfd);
 
     return 0;
