@@ -2,16 +2,16 @@
  * Файл содержит вспомогательные функции необходимые
  * для кодирования и декодирования фалйов
  */
-#include <stdio.h>
+//#include <stdio.h>
 #include <stdlib.h>
 
 #include <string.h>
 
 
 /*
- *  * Функция определения "бинарной длины" 
- *   * одного символа размером 1 байт
- *    */
+ * Функция определения "бинарной длины" 
+ * одного символа размером 1 байт
+ */
 short int bival_length (char *val)
 {
     /* Максимальная длина может равняться 8 битам */
@@ -47,25 +47,27 @@ void swap_val (void *a, void *b, size_t size)
 
 
 /*
- * Функция инициализации алфавита 
- * значениями из таблицы ASCII
+ * Функция инициализации алфавита alph, состоящего из nmemb элементов
+ * по size байт каждый, значениями из таблицы ASCII
  */
-void init_alph (char alph[256])
+void init_alph (void *alph, size_t size, size_t nmemb)
 {
-    for (int i = 0; i < 256; ++i) {
-        alph[i] = (char) i;
+
+    for (size_t i = 0; i < nmemb; ++i) {
+        memmove (alph + i * size, &i, size);
     }
 }
 
 
 /*
  * Функция определения позиции элемента
- * со значением val в алфавите alph
+ * со значением val в алфавите alph, состоящего 
+ * из nmemb элементов по size байт каждый
  */
-int find_into_alph (char alph[256], char val)
+int find_into_alph (void *val, void *alph, size_t size, size_t nmemb)
 {
-    for (int i = 0; i < 256; ++i) {
-        if (alph[i] == val) {
+    for (size_t i = 0; i < nmemb; ++i) {
+        if ( memcmp (alph + i * size, val, size) == 0 ) {
             return i;
         }
     }
@@ -76,12 +78,14 @@ int find_into_alph (char alph[256], char val)
 
 /*
  * Функция сдвига элемента с позиции pos
- * в начало алфавита alph
+ * в начало алфавита alph, состоящего 
+ * из nmemb элементов по size байт каждый
  */
-void offset_alph (char alph[256], int pos)
+void offset_alph (size_t pos, void *alph, size_t size, size_t nmemb)
 {
-    for (int i = pos; i > 0; --i) { 
-        swap_val (&alph[i], &alph[i -1], sizeof (char));
+    for (size_t i = pos; i > 0; --i) { 
+        swap_val (alph + i * size, alph + (i - 1) * size, size);
     }
 }
+
 

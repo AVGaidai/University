@@ -28,11 +28,11 @@ int MTF_coding (char *in_file, char *out_file, char alph[256])
     char buf;   // Буффер
     int  pos;   // Позиция считанного символа в текущем алфавите
        
-    init_alph (alph);  // Инициализация алфавита
+    init_alph (alph, sizeof (char), 256);  // Инициализация алфавита
  
     while (fread (&buf, 1, sizeof (char), in)) {
         /* Определение позции символа в алфавите */
-        pos = find_into_alph (alph, buf);
+        pos = find_into_alph (&buf, alph, sizeof (char), 256);
         if (pos == -1) {
             fclose (in);
             fclose (out);
@@ -43,7 +43,7 @@ int MTF_coding (char *in_file, char *out_file, char alph[256])
         /* Запись во временный файл позиции считанного символа */
         fwrite (&buf, 1, sizeof (char), out);
         /* Сдвиг элементов алфавита согласно метода сжатия */
-        offset_alph (alph, pos);
+        offset_alph (pos, alph, sizeof (char), 256);
     }
 
     fclose (in);
@@ -78,7 +78,7 @@ int MTF_decoding (char *in_file, char *out_file, char alph[256])
     char buf;   // Буффер
     int  pos;   // Позиция считанного символа в текущем алфавите
 
-    init_alph (alph); // Инициализация алфавита
+    init_alph (alph, sizeof (char), 256); // Инициализация алфавита
 
 
     while (fread (&buf, 1, sizeof (char), in)) {
@@ -86,7 +86,7 @@ int MTF_decoding (char *in_file, char *out_file, char alph[256])
         /* Восстановление данных по алфавиту */
         fwrite (&alph[pos], 1, sizeof (char), out);
         /* Сдвиг элементов алфавита согласно метода сжатия */
-        offset_alph (alph, pos);
+        offset_alph (pos, alph, sizeof (char), 256);
     }
 
     fclose (in);
