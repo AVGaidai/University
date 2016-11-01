@@ -12,7 +12,36 @@
 #define BUF_SIZE 8
 
 
-int compare (const void *a, const void *b, void *arg)
+struct PAIR {
+
+    size_t  pos;
+    char    val;
+
+    short   flg;
+};
+
+
+int find_cmp (void *a, void *b)
+{
+    struct PAIR A = *(struct PAIR *) a;
+    struct PAIR B = *(struct PAIR *) b;
+
+    int res;
+    
+    res = memcmp (&A.val, &B.val, sizeof (char));
+    
+    if (res == 0 && A.flg == 1) {
+        return 1;
+    } else if (res == 0) {
+        A.flg = 1;
+        memcpy (a, &A, sizeof (struct PAIR));
+    }
+
+    return res;
+}
+
+
+int compare_1 (const void *a, const void *b, void *arg)
 {
     size_t size = *(size_t *) arg;
 
@@ -36,6 +65,26 @@ int compare (const void *a, const void *b, void *arg)
 
     return res;
 }
+
+
+int compare_2 (const void *a, const void *b)
+{
+    struct PAIR A, B;
+
+    A = *(struct PAIR *) a; 
+    B = *(struct PAIR *) b; 
+
+    int res;
+    
+    res = memcmp (&A.val, &B.val, sizeof (char));
+
+    if (res == 0) {
+        res = memcmp (&A.pos, &B.pos, sizeof (size_t));
+    }
+
+    return res;
+}
+
 
 
 void BWT_coding (char *in_file, char *out_file)
@@ -64,7 +113,7 @@ void BWT_coding (char *in_file, char *out_file)
 
         size_t size = BUF_SIZE;
 
-        qsort_r (buf_2D, BUF_SIZE, BUF_SIZE, compare, &size);
+        qsort_r (buf_2D, BUF_SIZE, BUF_SIZE, compare_1, &size);
 
         for (int i = 0; i < BUF_SIZE; ++i) {
             res[i] = buf_2D[i][BUF_SIZE - 1];
@@ -107,7 +156,7 @@ void BWT_coding (char *in_file, char *out_file)
         cyc_offset_alph (rem_2D[i], sizeof (char), r_bytes);
     }
 
-    qsort_r (rem_2D, r_bytes, r_bytes, compare, &r_bytes);
+    qsort_r (rem_2D, r_bytes, r_bytes, compare_1, &r_bytes);
 
     for (int i = 0; i < r_bytes; ++i) {
         res1[i] = rem_2D[i][r_bytes - 1];
@@ -124,6 +173,119 @@ void BWT_coding (char *in_file, char *out_file)
 }
 
 
+
+void BWT_decoding (char *in_file, char *out_file)
+{
+    char buf[BUF_SIZE + 1];
+
+    char res[BUF_SIZE];
+
+    FILE *fin, *fout;
+
+    fin  = fopen (in_file, "rb");
+    fout = fopen (out_file, "wb");
+ 
+    fpos_t cur_fp;
+
+    fgetpos (fin, &cur_fp);
+    while (fread (buf, BUF_SIZE + 1, 1, fin)) {
+        fgetpos (fin, &cur_fp);
+
+        struct PAIR alph_1[BUF_SIZE];
+        struct PAIR alph_2[BUF_SIZE];
+
+        for (int i = 0; i < BUF_SIZE; ++i) {
+            alph_1[i].pos = i;
+            alph_1[i].val = buf[i];
+
+            alph_1[i].flg = 0;
+        }
+
+        memcpy (alph_2, alph_1, sizeof (struct PAIR) * BUF_SIZE);
+
+        qsort (alph_1, BUF_SIZE, sizeof (struct PAIR), compare_2);
+
+        for (int i = 0; i < BUF_SIZE; ++i) {
+            alph_2[i].pos = find_into_alph ( &alph_2[i], alph_1,
+                                             sizeof (struct PAIR),
+                                             BUF_SIZE, find_cmp   );
+        }
+
+        size_t start = (size_t) buf[BUF_SIZE];
+        size_t pos = alph_2[start].pos;
+
+        res[0] = alph_2[start].val;
+
+        for (int i = 1; i < BUF_SIZE; ++i) {
+            res[i] = alph_2[pos].val;
+            pos = alph_2[pos].pos;
+        }
+
+        fwrite (res, BUF_SIZE, 1, fout);
+    }
+
+    fsetpos (fin, (const fpos_t *) &cur_fp);
+
+    int r_bytes = -1;
+
+    for (int i = 0; ; ++i) {
+        if (fread (&buf[i], sizeof (char), 1, fin)) {
+            ++r_bytes;
+        } else {
+            break;
+        }
+    }
+
+    if (r_bytes == -1) {
+        fclose (fin);
+        fclose (fout);
+        return;
+    }
+
+    char rem[r_bytes + 1];
+    char res1[r_bytes];
+
+    memmove (rem, buf, r_bytes + 1);    
+
+    struct PAIR alph_1[r_bytes];
+    struct PAIR alph_2[r_bytes];
+
+    for (int i = 0; i < r_bytes; ++i) {
+        alph_1[i].pos = i;
+        alph_1[i].val = rem[i];
+
+        alph_1[i].flg = 0;
+    }
+
+    memcpy (alph_2, alph_1, sizeof (struct PAIR) * r_bytes);
+    qsort (alph_1, r_bytes, sizeof (struct PAIR), compare_2);
+
+    for (int i = 0; i < r_bytes; ++i) {
+        alph_2[i].pos = find_into_alph ( &alph_2[i], alph_1,
+                                         sizeof (struct PAIR),
+                                         r_bytes, find_cmp     );
+    }
+
+    size_t start = (size_t) rem[r_bytes];
+    size_t pos = alph_2[start].pos;
+
+    res1[0] = alph_2[start].val;
+
+    for (int i = 1; i < BUF_SIZE; ++i) {
+        res1[i] = alph_2[pos].val;
+        pos = alph_2[pos].pos;
+    }
+
+    fwrite (res1, r_bytes, 1, fout);
+
+    fclose (fin);
+    fclose (fout);
+   
+}
+
+
+
+
 int main (int argc,char *argv[])
 {
     if (argc < 4) {
@@ -131,6 +293,7 @@ int main (int argc,char *argv[])
     }
 
     BWT_coding (argv[1], argv[2]);
+    BWT_decoding (argv[2], argv[3]);
 
     return 0;
 }

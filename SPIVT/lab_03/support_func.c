@@ -63,11 +63,13 @@ void init_alph (void *alph, size_t size, size_t nmemb)
  * Функция определения позиции элемента
  * со значением val в алфавите alph, состоящего 
  * из nmemb элементов по size байт каждый
+ * compar () - функция сравнения элементов
  */
-int find_into_alph (void *val, void *alph, size_t size, size_t nmemb)
+int find_into_alph ( void *val, void *alph, size_t size,
+                     size_t nmemb, int (*compar) (void *, void *) )
 {
     for (size_t i = 0; i < nmemb; ++i) {
-        if ( memcmp (alph + i * size, val, size) == 0 ) {
+        if ( compar (alph + i * size, val) == 0 ) {
             return i;
         }
     }
