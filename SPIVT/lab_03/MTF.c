@@ -11,6 +11,14 @@
 #include "support_func.h"
 
 
+/*
+ * Функция сравнения для поиска желемента в алфавите
+ */
+int MTF_find_cmp (void *a, void *b)
+{
+    return memcmp (a, b, sizeof (char));
+}
+
 
 /*
  * Функция сжатия и кодирования входного файла in_file
@@ -32,7 +40,7 @@ int MTF_coding (char *in_file, char *out_file, char alph[256])
  
     while (fread (&buf, 1, sizeof (char), in)) {
         /* Определение позции символа в алфавите */
-        pos = find_into_alph (&buf, alph, sizeof (char), 256);
+        pos = find_into_alph (&buf, alph, sizeof (char), 256, MTF_find_cmp);
         if (pos == -1) {
             fclose (in);
             fclose (out);
