@@ -1,4 +1,4 @@
-#ifndef UDP_FUNL
+#ifndef UDP_FUNC
 #define UDP_FUNC
 
 #include <unistd.h>
