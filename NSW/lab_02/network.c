@@ -1,11 +1,16 @@
 #include <stdio.h>
+#include <unistd.h>
+
+#include <string.h>
 
 #include "TCP_FUNC.h"
 #include "error.h"
 
 
 #define FNAME     0
-#define CONTENT   2
+#define CONTENT   1
+
+#define SI sizeof (int)
 
 
 struct msg {
@@ -33,18 +38,18 @@ int send_file (int sockfd, const char *fname)
     int len = strlen (fname);
     int i, j;
 
-    for (i = 0; i < len / 4; ++i) {
-        memcpy (&msg.payload, fname + i * 4, sizeof (int));
+    for (i = 0; i < len / SI; ++i) {
+        memcpy (&msg.payload, fname + i * SI, SI);
         s_bytes = tcp_send_msg (sockfd, &msg, sizeof (msg));
     }
-    for (j = 0; fname[i * 4 + j] != '\0'; ++j) {
-        msg.payload[j] = fname[i * 4 + j];
+    for (j = 0; fname[i * SI + j] != '\0'; ++j) {
+        msg.payload[j] = fname[i * SI + j];
     }
     s_bytes = tcp_send_msg (sockfd, &msg, sizeof (msg));
 
     msg.type = CONTENT;
 
-    r_bytes = fread (&msg.payload, sizeof (int), 1, fp);
+    r_bytes = fread (&msg.payload, SI, 1, fp);
 
     i = 0;
     while (r_bytes > 0) {
@@ -59,7 +64,7 @@ int send_file (int sockfd, const char *fname)
         }
 
         i = 0;
-        r_bytes = fread (&msg.payload, sizeof (int), 1, fp);
+        r_bytes = fread (&msg.payload, SI, 1, fp);
         sleep (1);
     }
 
@@ -85,31 +90,38 @@ int recv_file (int sockfd)
         r_bytes = tcp_recv_msg (client_sock, &msg, sizeof (msg));
         sleep (1);
 
-        switch (msg.type) {
-        FNAME:
-            fname = reallock (fname, 4 * cnt_msg_fname + 1);
-            memcpy (fname + cnt_msg_fname * 4, msg.payload, 4);
+        if (msg.type == FNAME) {
+            fname = reallock (fname, SI * cnt_msg_fname + 1);
+            memcpy (fname + cnt_msg_fname * SI, msg.payload, SI);
             ++cnt_msg_fname;
-            break;
-        CONTENT:
-            cnt_msg_fname = 0;
-             
-            
-        
+            continue;
+        }
+        break;
+    }
 
+    FILE *fp;
+
+    fp = fopen (fname, "wb");
+
+    while (1) {
+        r_bytes = tcp_recv_msg (client_sock, &msg, sizeof (msg));
+        
         if (r_bytes == 0) {
             tcp_sock_remove (client_sock);
-            return 0;
+            return 1;
         }
-
-        BUF[r_bytes] = '\0';
 
         printf ("recv bytes: %d\n", r_bytes);
         printf ("data: %s\n", BUF);
         printf ("from \"%s:%hd\"\n", ipaddr, port);
+        
+        fwrite (&msg.payload, SI, 1, fp);
     }
 
+    fclose (fp);
 
+    prinrf ("Received file \"%s\"\n", fname);
+    free (fname);
 
     return 0;
 }

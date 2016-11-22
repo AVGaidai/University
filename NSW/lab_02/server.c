@@ -61,21 +61,7 @@ int main (int argc, char *argv[])
 
     int r_bytes;
 
-    while (1) {
-        r_bytes = tcp_recv_msg (client_sock, &BUF, BUF_SIZE);
-        sleep (1);
-
-        if (r_bytes == 0) {
-            tcp_sock_remove (client_sock);
-            return 0;
-        }
-
-        BUF[r_bytes] = '\0';
-
-        printf ("recv bytes: %d\n", r_bytes);       
-        printf ("data: %s\n", BUF);
-        printf ("from \"%s:%hd\"\n", ipaddr, port);
-    }
+    while (!recv_file (client_sock));
 
     return 0;
 }
