@@ -1,12 +1,15 @@
 #include <stdio.h>
 #include <stdlib.h>
 
+#include <unistd.h>
+
 #include <string.h>
 
-#include "UDP_FUNC.h"
+#include "TCP_FUNC.h"
 
 
 #define BUF_SIZE 20
+
 
 char IP_ADDR[16] = "127.0.0.1";
 
@@ -43,8 +46,13 @@ int main (int argc, char *argv[])
 
     uint16_t port;
 
-    while (tcp_listen (sockfd, 20)) {
-        int cfd = accept (sockfd, ipaddr, &port);
+    int client_sock;
+
+    tcp_listen (sockfd, 20);
+
+    while (1) {
+        client_sock = tcp_accept (sockfd, ipaddr, &port);
+        printf ("Client %s:%hd connected!\n", ipaddr, port);
         fork ();
         if (getpid () != main_pid) break;
     }
@@ -54,16 +62,20 @@ int main (int argc, char *argv[])
     int r_bytes;
 
     while (1) {
-        r_bytes = udp_recv_msg (sockfd, BUF, BUF_SIZE, ipaddr, &port);
+        r_bytes = tcp_recv_msg (client_sock, &BUF, BUF_SIZE);
+        sleep (1);
+
+        if (r_bytes == 0) {
+            tcp_sock_remove (client_sock);
+            return 0;
+        }
+
+        BUF[r_bytes] = '\0';
 
         printf ("recv bytes: %d\n", r_bytes);       
         printf ("data: %s\n", BUF);
         printf ("from \"%s:%hd\"\n", ipaddr, port);
-
-        udp_send_msg (sockfd, ipaddr, port, &answ, port);
     }
-
-    udp_sock_remove (sockfd);
 
     return 0;
 }

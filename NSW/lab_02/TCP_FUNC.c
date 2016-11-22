@@ -10,6 +10,7 @@
 
 #include <arpa/inet.h>
 
+#include <errno.h>
 
 #include "error.h"
 
@@ -89,15 +90,15 @@ int tcp_accept (int sockfd, char *ipaddr, uint16_t *port)
 {
     struct sockaddr_in addr;
 
-    socklen_t addrlen;
+    socklen_t addrlen = sizeof (struct sockaddr_in);
 
-    bero (&addr, addrlen);
+    bzero (&addr, addrlen);
 
     int status;
 
-    status = accept (sockfd, &addr, &addrlen);
+    status = accept (sockfd, (struct sockaddr *) &addr, &addrlen);
 
-    if (status) return print_err ("tcp_accept ()...");
+    if (status < 0) return print_err ("tcp_accept ()...");
 
     char *tmp;
 
@@ -107,7 +108,7 @@ int tcp_accept (int sockfd, char *ipaddr, uint16_t *port)
     memcpy (ipaddr, tmp, 16);
     *port = ntohs (addr.sin_port);
 
-    return 0;
+    return status;
 }
 
 
@@ -123,10 +124,6 @@ int tcp_send_msg (int sockfd, const void *buf, size_t len)
 
 int tcp_recv_msg (int sockfd, void *buf, size_t len)
 {
-    int r_bytes;
-
-    r_bytes = recv (sockfd, buf, len, 0);
-
-    return (r_bytes <= 0) ? print_err ("tcp_recv_msg ()...") : r_bytes;
+    return recv (sockfd, buf, len, 0);
 }
 

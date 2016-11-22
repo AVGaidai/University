@@ -7,12 +7,12 @@
 #include "TCP_FUNC.h"
 
 
-#define SERVER_IP      127.0.0.1
+#define SERVER_IP      "127.0.0.1"
 #define SERVER_PORT    8888
 
 
 char IP_ADDR[16] = "127.0.0.1";
-uint16_t PORT = 7777;
+uint16_t PORT = 8887;
 
 
 int main (int argc, char *argv[])
@@ -38,7 +38,7 @@ int main (int argc, char *argv[])
              "====================================\n", 
                                   sockfd, IP_ADDR, PORT );
 
-    if (tcp_connect (SERVER_IP, SERVER_PORT)) {
+    if (tcp_connect (sockfd, SERVER_IP, SERVER_PORT)) {
         tcp_sock_remove (sockfd);
         return -1;
     }
