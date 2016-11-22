@@ -6,9 +6,8 @@
 #include <string.h>
 
 #include "TCP_FUNC.h"
-
-
-#define BUF_SIZE 20
+#include "support_func.h"
+#include "network.h"
 
 
 char IP_ADDR[16] = "127.0.0.1";
@@ -57,11 +56,49 @@ int main (int argc, char *argv[])
         if (getpid () != main_pid) break;
     }
 
-    char BUF[BUF_SIZE];
+    char *command;
+    char sname[15] = "./dir_create.sh";  // Script name
 
-    int r_bytes;
+    char sport[4];                       // Port in char format
 
-    while (!recv_file (client_sock));
+    itoa (port, sport);
+    printf ("port in char format: %s\n", sport);
+
+    int sname_len = 15;
+    int sport_len = 4;
+    int ipaddr_len = strlen (ipaddr);
+
+    printf ("sname_len: %d\n", sname_len);
+    printf ("ipaddr_len: %d\n", ipaddr_len);
+    printf ("sport_len: %d\n", sport_len);
+
+    command = (char *) malloc (sname_len + ipaddr_len + sport_len + 2);
+
+    memcpy (command, sname, sname_len);
+    command[sname_len] = ' ';
+    memcpy (command + sname_len + 1, ipaddr, ipaddr_len);
+    command[sname_len + ipaddr_len + 1] = ' ';
+    memcpy (command + sname_len + ipaddr_len + 2, sport, sport_len);
+
+    printf ("command: %s\n", command);
+
+    char *dir;
+
+    dir = (char *) malloc (ipaddr_len + sport_len + 2);
+    memcpy (dir, ipaddr, ipaddr_len);
+    dir[ipaddr_len] = '/';
+    memcpy (dir + ipaddr_len + 1, sport, sport_len);
+    dir[ipaddr_len + sport_len + 1] = '/';
+
+    system (command);
+
+    free (command);
+
+    while (!recv_file (client_sock, dir));
+
+    free (dir);
+
+    tcp_sock_remove (client_sock);
 
     return 0;
 }

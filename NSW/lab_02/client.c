@@ -5,6 +5,7 @@
 
 #include "error.h"
 #include "TCP_FUNC.h"
+#include "network.h"
 
 
 #define SERVER_IP      "127.0.0.1"
@@ -43,35 +44,8 @@ int main (int argc, char *argv[])
         return -1;
     }
 
-    int s_bytes;
-    int r_bytes;
+    send_file (sockfd, "msg.bin");
 
-    FILE *fp;
-
-    fp = fopen ("msg.bin", "rb");
-    if (fp <= 0) {
-        return tcp_sock_remove (sockfd);
-    }
-
-    int  fbuf;
-    
-    r_bytes = fread (&fbuf, sizeof (int), 1, fp);
-
-    while (r_bytes > 0) {
-        s_bytes = tcp_send_msg (sockfd, &fbuf, sizeof (int));
-        printf ("send bytes: %d\n", s_bytes);
-
-        if (s_bytes <= 0) {
-            r_bytes = 1;
-            print_info ("transmission failure!");
-            continue;
-        }
-
-        r_bytes = fread (&fbuf, sizeof (int), 1, fp);
-        sleep (1);
-    }
-
-    fclose (fp);
     tcp_sock_remove (sockfd);
 
     return 0;

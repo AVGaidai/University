@@ -1,30 +1,10 @@
-int main (int argc, char *argv[])
-{
-    if (argc >= 2) {
-        memmove (IP_ADDR, argv[1], 16);
-        printf ("%s\n", IP_ADDR);
-    }
+#ifndef ERROR_H
+#define ERROR_H
 
-    if (argc == 3) {
-        PORT = (uint16_t) atoi (argv[2]);
-    }
+#include <stdio.h>
 
+int print_err (char *);
+int print_war (char *);
+int print_info (char *);
 
-    int sockfd;
-
-    sockfd = udp_sock_create (IP_ADDR, PORT);
-
-    if (sockfd == -1) return -1;
-
-    printf ( "====================================\n"
-             "sockfd=%d\n"
-             "Address: \"%s:%hd\"\n"
-             "====================================\n",
-                                  sockfd, IP_ADDR, PORT );
-
-
-    char BUF[20];
-    char ipaddr[16];
-
-    uint16_t port;
-
+#endif

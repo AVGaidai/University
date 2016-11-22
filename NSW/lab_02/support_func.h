@@ -4,5 +4,6 @@
 #include <sys/time.h>
 
 void set_recv_timer (int, time_t);
+void itoa(int, char *);
 
 #endif
