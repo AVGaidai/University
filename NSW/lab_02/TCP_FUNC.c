@@ -16,7 +16,7 @@
 
 
 
-int tcp_sock_create (const char *ipaddr, uint16_t port)
+int tcp_sock_create (const char *ipaddr, uint16_t *port)
 {
     int sockfd;
 
@@ -27,17 +27,20 @@ int tcp_sock_create (const char *ipaddr, uint16_t port)
     }
 
     struct sockaddr_in addr;
+    socklen_t addrlen;
+
+    addrlen = sizeof (struct sockaddr_in);
+
+    int status;
 
     bzero (&addr, sizeof (struct sockaddr_in));
 
     addr.sin_family = AF_INET;
-    addr.sin_port = htons (port);
-    
+    addr.sin_port = 0; //htons (0);
+   
     if ( inet_aton (ipaddr, &addr.sin_addr) == 0 ) {
         return print_err ("tcp_sock_create ()...");
     }
-
-    int status;
 
     status = bind ( sockfd, (const struct sockaddr *) &addr, 
                     (socklen_t) sizeof (addr)                );
@@ -46,6 +49,14 @@ int tcp_sock_create (const char *ipaddr, uint16_t port)
         return print_err ("tcp_sock_create ()...");
     }
 
+    status = getsockname (sockfd, (struct sockaddr *) &addr, &addrlen);
+    if (status) {
+        close (sockfd);
+        return print_err ("tcp_sock_create ()...");
+    } 
+
+    *port = ntohs (addr.sin_port);
+ 
     return sockfd;
 }
 

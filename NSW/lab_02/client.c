@@ -8,43 +8,57 @@
 #include "network.h"
 
 
-#define SERVER_IP      "127.0.0.1"
-#define SERVER_PORT    8888
 
+char     SERV_IPADDR[16] = "127.0.0.1\0";
+uint16_t SERV_PORT = 8888;
 
-char IP_ADDR[16] = "127.0.0.1";
-uint16_t PORT = 8887;
+char     HOST_IPADDR[16] = "127.0.0.1\0";
+uint16_t HOST_PORT;
 
 
 int main (int argc, char *argv[])
 {
     if (argc >= 2) {
-        memmove (IP_ADDR, argv[1], 16);
-        printf ("%s\n", IP_ADDR);
+        memmove (SERV_IPADDR, argv[1], 16);
+        printf ("%s\n", SERV_IPADDR);
     }
 
     if (argc == 3) {
-        PORT = (uint16_t) atoi (argv[2]);
+        SERV_PORT = (uint16_t) atoi (argv[2]);
     }
 
     int sockfd;
 
-    sockfd = tcp_sock_create (IP_ADDR, PORT);
+    sockfd = tcp_sock_create (HOST_IPADDR, &HOST_PORT);
 
     if (sockfd == -1) return -1;
 
     printf ( "====================================\n"
              "sockfd=%d\n"
-             "Address: \"%s:%hd\"\n"
+             "Address: \"%s:%hu\"\n"
              "====================================\n", 
-                                  sockfd, IP_ADDR, PORT );
+                        sockfd, HOST_IPADDR, HOST_PORT );
 
-    if (tcp_connect (sockfd, SERVER_IP, SERVER_PORT)) {
+    if (tcp_connect (sockfd, SERV_IPADDR, SERV_PORT)) {
         tcp_sock_remove (sockfd);
         return -1;
     }
 
-    send_file (sockfd, "msg.bin");
+
+    char fname[20];
+    int i;
+
+    while(1) {
+        i = 0;
+        printf ("Input fname: ");    
+        do {
+            scanf ("%c", &fname[i++]);
+        } while (i < 19 && fname[i - 1] != '\n');
+        fname[i - 1] = '\0';
+
+        if (!strcmp (fname, "//exit//")) break;
+        send_file (sockfd, fname);
+    }
 
     tcp_sock_remove (sockfd);
 

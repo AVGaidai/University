@@ -7,8 +7,9 @@
 #include "error.h"
 
 
-#define FNAME     0
-#define CONTENT   1
+#define FNAME        0
+#define CONTENT      1
+#define END_OF_FILE  2
 
 #define SI sizeof (int)
 
@@ -45,8 +46,6 @@ int create_pack (void *pack, size_t size, FILE *fp)
 
     memcpy (pack, tmp_obj, size);
 
-    printf ("tmp_obj: %s\n", tmp_obj);
-
     free (tmp_obj);
 
     return i;
@@ -66,36 +65,37 @@ int send_file (int sockfd, const char *fname)
 
     msg.type = FNAME;
 
-    int len = strlen (fname);
+    int len = strlen (fname) + 1;
     int i, j;
 
     for (i = 0; i < len / SI; ++i) {
         memcpy (&msg.payload, fname + i * SI, SI);
         s_bytes = tcp_send_msg (sockfd, &msg, sizeof (msg));
+        printf ("send bytes: %d\n", s_bytes);
     }
 
-    char rem_fname[SI];   // Remainder file name
-
-    for (j = 0; fname[i * SI + j] != '\0'; ++j) {
-        rem_fname[j] = fname[i * SI + j];
+    if (len % SI) {
+        char rem_fname[SI];   // Remainder file name
+ 
+        for (j = 0; fname[i * SI + j] != '\0'; ++j) {
+            rem_fname[j] = fname[i * SI + j];
+        }
+        rem_fname[j] = '\0';
+        memcpy (&msg.payload, rem_fname, SI);
+ 
+        s_bytes = tcp_send_msg (sockfd, &msg, sizeof (msg));
+        printf ("send bytes: %d\n", s_bytes);
     }
-    memcpy (&msg.payload, rem_fname, SI);
-
-    s_bytes = tcp_send_msg (sockfd, &msg, sizeof (msg));
 
     msg.type = CONTENT;
 
     r_bytes = create_pack (&msg.payload, SI, fp);
 
-    printf ("recv bytes: %d\n", r_bytes);
     i = 0;
     while (r_bytes > 0) {
-        char tmp[4];
         msg.size = r_bytes;
-        memcpy (tmp, &msg.payload, SI);
-        printf ("data: %s\n", tmp);
         s_bytes = tcp_send_msg (sockfd, &msg, sizeof (msg));
-        printf ("send bytes: %d\n", s_bytes);
+        printf ("send bytes: %d from ./%s\n", s_bytes, fname);
 
         if (s_bytes <= 0) {
             r_bytes = 1;
@@ -106,13 +106,16 @@ int send_file (int sockfd, const char *fname)
 
         i = 0;
         r_bytes = create_pack (&msg.payload, SI, fp);
-        printf ("recv bytes: %d\n", r_bytes);
-//        sleep (1);
+        sleep (1);
     }
 
     fclose (fp);
 
     print_info ("transmission successful!");
+
+    msg.type = END_OF_FILE;
+    s_bytes = tcp_send_msg (sockfd, &msg, sizeof (msg));
+    printf ("send bytes: %d\n", s_bytes);
 
     return 0;
 }
@@ -130,27 +133,28 @@ int recv_file (int sockfd, const char *dir)
 
     while (1) {
         r_bytes = tcp_recv_msg (sockfd, &msg, sizeof (msg));
-//        sleep (1);
-
-        printf ("recv bytes: %d\n", r_bytes);
+        if (r_bytes == 0) {
+            if (fname) free (fname);
+            return 1;
+        }
 
         if (msg.type == FNAME) {
             fname = realloc (fname, SI * cnt_msg_fname + 1);
             memcpy (fname + cnt_msg_fname * SI, &msg.payload, SI);
             ++cnt_msg_fname;
+            printf ("recv bytes: %d\n", r_bytes);
             continue;
         }
         break;
     }
 
     int dir_len = strlen (dir);
-    printf ("dir_len: %d\n", dir_len);
     size_t fname_len = strlen (fname);
-    printf ("dir_len: %d\n", dir_len);
 
-    path = (char *) malloc (fname_len + dir_len);
+    path = (char *) malloc (fname_len + dir_len + 1);
     memcpy (path, dir, dir_len);
-    memcpy (path + dir_len, fname, fname_len); 
+    memcpy (path + dir_len, fname, fname_len);
+    path[fname_len + dir_len] = '\0';
     
     FILE *fp;
 
@@ -160,31 +164,36 @@ int recv_file (int sockfd, const char *dir)
     }
 
     printf ("fname: %s\n", fname);
-    printf ("path: %s\n", path);
+    printf ("path: ./%s\n", path);
 
     free (fname);
-    free (path);
 
-    printf ("recv bytes: %d\n", r_bytes);
+    printf ("recv bytes: %d in ./%s\n", r_bytes, path);
     fwrite (&msg.payload, SI, 1, fp);
  
     while (1) {
         r_bytes = tcp_recv_msg (sockfd, &msg, sizeof (msg));
         
         if (r_bytes == 0) {
-            return 1;
+           fclose (fp);
+           free (path);
+           return 1;
         }
 
-        printf ("recv bytes: %d\n", r_bytes);
-char tmp[SI];
-memcpy (tmp, &msg.payload, SI);
-        printf ("data: %s\n", tmp);
+        if (msg.type == END_OF_FILE) {
+            printf ("recv bytes: %d\n", r_bytes);
+            break;
+        }
+
+        printf ("recv bytes: %d in ./%s\n", r_bytes, path);
         fwrite (&msg.payload, msg.size, 1, fp);
     }
 
     fclose (fp);
+    printf ("\E[32mReceived file\E[31m \"./%s\"\E[0m\n", path);
 
-    printf ("Received file \"%s\"\n", fname);
+    free (path);
+
 
     return 0;
 }

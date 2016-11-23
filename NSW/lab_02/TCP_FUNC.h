@@ -4,7 +4,7 @@
 #include <unistd.h>
 #include <stdint.h>
 
-int tcp_sock_create (const char *, uint16_t);
+int tcp_sock_create (const char *, uint16_t *);
 int tcp_sock_remove (int);
 int tcp_connect (int, const char *, uint16_t);
 int tcp_listen (int, int);
