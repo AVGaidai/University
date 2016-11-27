@@ -19,6 +19,13 @@ uint16_t SERV_PORT;
 
 char FNAME[20];
 
+struct msg {
+
+    char buf[100];
+    int  len;
+
+};
+
 
 int main (int argc, char *argv[])
 {
@@ -34,7 +41,7 @@ int main (int argc, char *argv[])
 
     int sockfd;
 
-    sockfd = socket (PF_INET, SOCK_STREAM, IPPROTO_SCTP);
+    sockfd = socket (PF_INET, SOCK_SEQPACKET, IPPROTO_SCTP);
     if (sockfd <= 0) {
         return -1;
     }
@@ -51,12 +58,6 @@ int main (int argc, char *argv[])
 
     status = inet_aton (SERV_IPADDR, &addr.sin_addr);
     if (!status) {
-        close (sockfd);
-        return -1;
-    }
-
-    status = sctp_connectx (sockfd, (struct sockaddr *) &addr, 1, 0);
-    if (status) {
         close (sockfd);
         return -1;
     }
@@ -80,16 +81,46 @@ int main (int argc, char *argv[])
     getsockopt ( sockfd, IPPROTO_SCTP, SCTP_SNDRCV, 
                  &sinfo, &optlen                    );
 
-    printf ("%ld\n", sizeof (sinfo.sinfo_stream));
-
     int r_bytes, s_bytes;
-    char ch;
+    struct msg msg;
+    fpos_t pos;
 
-    while ((r_bytes = fread (&ch, 1, 1, fp))) {
-        s_bytes = sctp_sendmsg ( sockfd, &ch, 1, (struct sockaddr *) &addr,
-                                 addrlen, sinfo.sinfo_ppid, 
-                                 sinfo.sinfo_flags, 0, 0, 0                 );
+
+    printf ("Input message: ");
+    int i = 0;
+
+    do {
+        scanf ("%c", &msg.buf[i++]);
+    } while (i < 99 && msg.buf[i - 1] != '\n');
+
+    msg.len = i;
+    msg.buf[i - 1] = '\0';
+
+//    printf ("%s\n", msg.buf);
+    
+    s_bytes = sctp_sendmsg ( sockfd, &msg, sizeof (msg),
+                             (struct sockaddr *) &addr,
+                             addrlen, 0, 0, 1, 0, 0     );
+
+    fgetpos (fp, &pos);
+    while ((r_bytes = fread (msg.buf, 100, 1, fp))) {
+        fgetpos (fp, &pos);
+        msg.len = 100;
+        s_bytes = sctp_sendmsg ( sockfd, &msg, sizeof (msg),
+                                 (struct sockaddr *) &addr,
+                                 addrlen, 0, 0, 0, 0, 0     );
+//        printf ("s_bytes: %d\n", s_bytes);
     }
+
+    fsetpos (fp, (const fpos_t *) &pos);
+    while ((r_bytes = fread (&msg.buf[0], 1, 1, fp))) {
+        msg.len = 1;
+        s_bytes = sctp_sendmsg ( sockfd, &msg, sizeof (msg),
+                                 (struct sockaddr *) &addr,
+                                 addrlen, 0, 0, 0, 0, 0     );
+//        printf ("s_bytes: %d\n", s_bytes);
+    }
+
 
     close (sockfd);
 
