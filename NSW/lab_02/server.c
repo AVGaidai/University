@@ -1,9 +1,15 @@
 #include <stdio.h>
 #include <stdlib.h>
 
+#include <sys/types.h>
+#include <sys/wait.h>
+#include <signal.h>
+
 #include <unistd.h>
 
 #include <string.h>
+
+#include <errno.h>
 
 #include "TCP_FUNC.h"
 #include "support_func.h"
@@ -13,6 +19,13 @@
 char     IPADDR[16] = "127.0.0.1\0";
 
 uint16_t PORT;
+
+void handle_sigchld(int sig) {
+    int saved_errno = errno;
+
+    while (waitpid((pid_t)(-1), 0, WNOHANG) > 0) {}
+    errno = saved_errno;
+}
 
 
 int main (int argc, char *argv[])
@@ -30,7 +43,7 @@ int main (int argc, char *argv[])
                                   sockfd, IPADDR, PORT );
 
     pid_t main_pid = getpid ();
-
+    
     char ipaddr[16];
 
     uint16_t port;
@@ -38,6 +51,8 @@ int main (int argc, char *argv[])
     int client_sock;
 
     tcp_listen (sockfd, 20);
+
+    signal (SIGCHLD, handle_sigchld);
 
     while (1) {
         client_sock = tcp_accept (sockfd, ipaddr, &port);
