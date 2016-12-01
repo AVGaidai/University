@@ -1,0 +1,10 @@
+#PBS -N out_file
+#PBS -l nodes=1:ppn=1
+#PBS -j oe
+
+cd $PBS_O_WORKDIR
+let M=`env echo $PBS_JOBID | tr -cd "[0-9]"`
+let N=M*2
+P=`expr length $HOSTNAME`
+
+./Mul_Matrix.out $M $N $P
