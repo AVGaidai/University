@@ -5,6 +5,7 @@
 #include <unistd.h>
 
 #include <string.h>
+#include <strings.h>
 
 #include <time.h>
 
@@ -60,18 +61,90 @@ void matrix_print (int **M, int x, int y)
 }
 
 
-int XA = 16, YA = 16, XB = 16, YB = 16;
+/*
+ * A - rows
+ * B - rows
+ */
+void compute_rr (int **A, int **B, int **C, int N)
+{
+    for (int i = 0; i < N; ++i) {
+        bzero (C[i], N * sizeof (int));
+        for (int j = 0; j < N; ++j) {
+            for (int k = 0; k < N; ++k) {
+                C[i][k] += A[i][j] * B[j][k];
+            }
+        }
+    }
+}
 
+
+/*
+ * A - columns
+ * B - columns
+ */
+void compute_cc (int **A, int **B, int **C, int N)
+{
+    for (int i = 0; i < N; ++i)
+        bzero (C[i], N * sizeof (int));
+
+    for (int i = 0; i < N; ++i) {
+        for (int j = 0; j < N; ++j) {
+            for (int k = 0; k < N; ++k) {
+                C[k][i] += A[k][j] * B[j][i];
+            }
+        }
+    }
+}
+
+
+
+/*
+ * A - rows
+ * B - columns
+ */
+void compute_rc (int **A, int **B, int **C, int N)
+{
+    for (int i = 0; i < N; ++i) {
+        for (int j = 0; j < N; ++j) {
+            C[i][j] = 0;
+            for (int k = 0; k < N; ++k) {
+                C[i][j] += A[i][k] * B[k][j];
+            }
+        }
+    }
+}
+
+/*
+ * A - columns
+ * B - rows
+ */
+void compute_cr (int **A, int **B, int **C, int N)
+{
+    for (int i = 0; i < N; ++i)
+        bzero (C[i], N * sizeof (int));
+
+    for (int i = 0; i < N; ++i) {
+        for (int j = 0; j < N; ++j) {
+            for (int k = 0; k < N; ++k) {
+                C[j][k] += A[j][i] * B[i][k];
+            }
+        }
+    }
+}
+
+
+
+int XA = 16, YA = 16, XB = 16, YB = 16;
 
 int main (int argc, char *argv[])
 {
     int opt, save = 0, compute = 0;
     char *fname = NULL;
 
-    while ((opt = getopt (argc, argv, "csn:f:")) != -1) {
+    while ((opt = getopt (argc, argv, "sc:n:f:")) != -1) {
         switch (opt) {
         case 'c':
-            compute = 1;
+            compute = atoi (optarg);
             break;
         case 's':
             save = 1;
@@ -135,17 +208,24 @@ int main (int argc, char *argv[])
 
     //    matrix_print (A, XA, YA);
     //    matrix_print (B, XB, YB);
-
-        for (int k = 0; k < XA; ++k) {
-            for (int l = 0; l < YB; ++l) {
-                C[k][l] = 0;
-                for (int j = 0; j < YA; ++j) {
-                    C[k][l] += A[k][j] * B[j][l];
-                }
-            }
+        switch (compute) {
+        case 1:
+            compute_rr (A, B, C, XA);
+            break;
+        case 2:
+            compute_cc (A, B, C, XA);
+            break;
+        case 3:
+            compute_rc (A, B, C, XA);
+            break;
+        case 4:
+            compute_cr (A, B, C, XA);
+            break;
+        default:
+            compute_rc (A, B, C, XA);
         }
 
-    //    matrix_print (C, XA, YB);
+        matrix_print (C, XA, YB);
         matrix_free (C, XA, YB);
     }
 
