@@ -5,9 +5,22 @@ COUNT="1"
 let SIZE=$1
 let FINAL=$2
 
+
+
 while [ $SIZE -le $FINAL ] ; do
+
     echo $SIZE
-    ./Mul_Matrix.out -s -n $SIZE -f "set_"$COUNT".txt"
+    echo "#PBS -N out_file"      >  task_02.job
+    echo "#PBS -l nodes=1:ppn=8" >> task_02.job
+    echo "#PBS -j oe"            >> task_02.job
+    echo " "                     >> task_02.job
+    echo "cd \$PBS_O_WORKDIR"    >> task_02.job
+
+    echo "./Mul_Matrix.out -s -n $SIZE -f set_"$COUNT".txt" >> task_02.job
+
+    qsub task_02.job
+
     let COUNT=$COUNT+1
     let SIZE=$SIZE+16
+
 done

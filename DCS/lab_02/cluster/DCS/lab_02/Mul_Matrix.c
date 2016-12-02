@@ -9,6 +9,9 @@
 
 #include <time.h>
 
+#include <inttypes.h>
+
+
 
 int **matrix_init (int x, int y)
 {
@@ -133,6 +136,15 @@ void compute_cr (int **A, int **B, int **C, int N)
 }
 
 
+uint64_t get_time (void)
+{
+    uint32_t low, high;
+
+    __asm__ __volatile__ ( "rdtsc\n" : "=a" (low), "=d" (high) );
+
+    return ((uint64_t)high << 32) | low;
+}
+
 
 int XA = 16, YA = 16, XB = 16, YB = 16;
 
@@ -206,26 +218,53 @@ int main (int argc, char *argv[])
     if (compute) {
         C = matrix_init (XA, YB);
 
+        uint64_t start, end;
     //    matrix_print (A, XA, YA);
     //    matrix_print (B, XB, YB);
         switch (compute) {
         case 1:
             compute_rr (A, B, C, XA);
+            start = get_time ();
+            for (int i = 0; i < 5; ++i) {
+                compute_rr (A, B, C, XA);
+            } 
+            end = get_time ();
             break;
         case 2:
             compute_cc (A, B, C, XA);
+            start = get_time ();
+            for (int i = 0; i < 5; ++i) {
+                compute_cc (A, B, C, XA);
+            } 
+            end = get_time ();
             break;
         case 3:
             compute_rc (A, B, C, XA);
+            start = get_time ();
+            for (int i = 0; i < 5; ++i) {
+                compute_rc (A, B, C, XA);
+            } 
+            end = get_time ();
             break;
         case 4:
             compute_cr (A, B, C, XA);
+            start = get_time ();
+            for (int i = 0; i < 5; ++i) {
+                compute_cr (A, B, C, XA);
+            } 
+            end = get_time ();
             break;
         default:
             compute_rc (A, B, C, XA);
+            start = get_time ();
+            for (int i = 0; i < 5; ++i) {
+                compute_rc (A, B, C, XA);
+            } 
+            end = get_time ();
         }
-
-        matrix_print (C, XA, YB);
+        printf ("SIZE\t\t\tCYCLES\n");
+        printf ("%d\t\t\t%ld\n", XA, (end - start) / 5);
+//        matrix_print (C, XA, YB);
         matrix_free (C, XA, YB);
     }
 

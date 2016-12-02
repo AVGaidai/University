@@ -3,4 +3,4 @@
 #PBS -j oe
  
 cd $PBS_O_WORKDIR
-./Mul_Matrix.out -c 4 -f set_1.txt -n 32
+./Mul_Matrix.out -s -n 32 -f set_1.txt
