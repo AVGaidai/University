@@ -1,0 +1,13 @@
+set title "Matrix Multiplication" font "20"
+set key left box
+
+set xlabel "Matrix size N x N"
+set ylabel "Cycles"
+
+set xtic 256
+
+
+plot "main_out_file_1.txt" using 1:2 w l lc 1  title "rows rows",\
+     "main_out_file_2.txt" using 1:2 w l lc 2  title "columns columns",\
+     "main_out_file_3.txt" using 1:2 w l lc 3  title "rows columns",\
+     "main_out_file_4.txt" using 1:2 w l lc 4  title "columns rows"

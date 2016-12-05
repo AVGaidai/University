@@ -1,6 +1,0 @@
-#PBS -N out_file
-#PBS -l nodes=1:ppn=8
-#PBS -j oe
- 
-cd $PBS_O_WORKDIR
-./Mul_Matrix.out -s -n 32 -f set_1.txt
