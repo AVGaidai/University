@@ -7,4 +7,4 @@ all:
 	$(CC) $(CFLAGS) -o $(PROG).out $(PROG).c
 
 clean:
-	rm -f *.out out_file.o* main_out_file*.txt set_*.txt
+	rm -f *.out out_file.o* set_*.txt cachegrind.out.*

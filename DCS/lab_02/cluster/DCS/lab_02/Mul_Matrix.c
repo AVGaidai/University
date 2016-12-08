@@ -12,6 +12,15 @@
 #include <inttypes.h>
 
 
+uint64_t get_time (void)
+{
+    uint32_t low, high;
+
+    __asm__ __volatile__ ( "rdtsc\n" : "=a" (low), "=d" (high) );
+
+    return ((uint64_t)high << 32) | low;
+}
+
 
 int **matrix_init (int x, int y)
 {
@@ -65,15 +74,17 @@ void matrix_print (int **M, int x, int y)
 
 
 /*
- * A - rows
- * B - rows
+ * A - rows (main)
+ * B - rows (second)
  */
-void compute_rr (int **A, int **B, int **C, int N)
+void compute_Rr (int **A, int **B, int **C, int N)
 {
     for (int i = 0; i < N; ++i) {
         bzero (C[i], N * sizeof (int));
         for (int j = 0; j < N; ++j) {
             for (int k = 0; k < N; ++k) {
+                //printf ( "C[%d][%d] += A[%d][%d] * B[%d][%d]\n",
+                //         i, k, i, j, j, k                        );     
                 C[i][k] += A[i][j] * B[j][k];
             }
         }
@@ -82,10 +93,10 @@ void compute_rr (int **A, int **B, int **C, int N)
 
 
 /*
- * A - columns
- * B - columns
+ * A - columns (main)
+ * B - columns (second)
  */
-void compute_cc (int **A, int **B, int **C, int N)
+void compute_Cc (int **A, int **B, int **C, int N)
 {
     for (int i = 0; i < N; ++i)
         bzero (C[i], N * sizeof (int));
@@ -93,6 +104,71 @@ void compute_cc (int **A, int **B, int **C, int N)
     for (int i = 0; i < N; ++i) {
         for (int j = 0; j < N; ++j) {
             for (int k = 0; k < N; ++k) {
+                //printf ( "C[%d][%d] += A[%d][%d] * B[%d][%d]\n",
+                //         k, j, k, i, i, j                        );     
+                C[k][j] += A[k][i] * B[i][j];
+            }
+        }
+    }
+}
+
+
+
+/*
+ * A - rows (main)
+ * B - columns (second)
+ */
+void compute_Rc (int **A, int **B, int **C, int N)
+{
+    for (int i = 0; i < N; ++i)
+        bzero (C[i], N * sizeof (int));
+
+    for (int i = 0; i < N; ++i) {
+        for (int j = 0; j < N; ++j) {
+            for (int k = 0; k < N; ++k) {
+                //printf ( "C[%d][%d] += A[%d][%d] * B[%d][%d]\n",
+                //         i, j, i, k, k, j                        );     
+                C[i][j] += A[i][k] * B[k][j];
+            }
+        }
+    }
+}
+
+/*
+ * A - columns (main)
+ * B - rows (second)
+ */
+void compute_Cr (int **A, int **B, int **C, int N)
+{
+    for (int i = 0; i < N; ++i)
+        bzero (C[i], N * sizeof (int));
+
+    for (int i = 0; i < N; ++i) {
+        for (int j = 0; j < N; ++j) {
+            for (int k = 0; k < N; ++k) {
+                //printf ( "C[%d][%d] += A[%d][%d] * B[%d][%d]\n",
+                //         j, k, j, i, i, k                        );     
+                C[j][k] += A[j][i] * B[i][k];
+            }
+        }
+    }
+}
+
+
+/*
+ * A - columns (second)
+ * B - columns (main)
+ */
+void compute_cC (int **A, int **B, int **C, int N)
+{
+    for (int i = 0; i < N; ++i)
+        bzero (C[i], N * sizeof (int));
+
+    for (int i = 0; i < N; ++i) {
+        for (int j = 0; j < N; ++j) {
+            for (int k = 0; k < N; ++k) {
+                //printf ( "C[%d][%d] += A[%d][%d] * B[%d][%d]\n",
+                //         k, i, k, j, j, i                        );     
                 C[k][i] += A[k][j] * B[j][i];
             }
         }
@@ -102,26 +178,10 @@ void compute_cc (int **A, int **B, int **C, int N)
 
 
 /*
- * A - rows
- * B - columns
+ * A - rows (second)
+ * B - columns (main)
  */
-void compute_rc (int **A, int **B, int **C, int N)
-{
-    for (int i = 0; i < N; ++i) {
-        for (int j = 0; j < N; ++j) {
-            C[i][j] = 0;
-            for (int k = 0; k < N; ++k) {
-                C[i][j] += A[i][k] * B[k][j];
-            }
-        }
-    }
-}
-
-/*
- * A - columns
- * B - rows
- */
-void compute_cr (int **A, int **B, int **C, int N)
+void compute_rC (int **A, int **B, int **C, int N)
 {
     for (int i = 0; i < N; ++i)
         bzero (C[i], N * sizeof (int));
@@ -129,20 +189,12 @@ void compute_cr (int **A, int **B, int **C, int N)
     for (int i = 0; i < N; ++i) {
         for (int j = 0; j < N; ++j) {
             for (int k = 0; k < N; ++k) {
-                C[j][k] += A[j][i] * B[i][k];
+                //printf ( "C[%d][%d] += A[%d][%d] * B[%d][%d]\n",
+                //         j, i, j, k, k, i                        );     
+                C[j][i] += A[j][k] * B[k][i];
             }
         }
     }
-}
-
-
-uint64_t get_time (void)
-{
-    uint32_t low, high;
-
-    __asm__ __volatile__ ( "rdtsc\n" : "=a" (low), "=d" (high) );
-
-    return ((uint64_t)high << 32) | low;
 }
 
 
@@ -223,48 +275,64 @@ int main (int argc, char *argv[])
     //    matrix_print (B, XB, YB);
         switch (compute) {
         case 1:
-            compute_rr (A, B, C, XA);
+            compute_Rr (A, B, C, XA);
             start = get_time ();
             for (int i = 0; i < 5; ++i) {
-                compute_rr (A, B, C, XA);
+                compute_Rr (A, B, C, XA);
             } 
             end = get_time ();
             break;
         case 2:
-            compute_cc (A, B, C, XA);
+            compute_Cc (A, B, C, XA);
             start = get_time ();
             for (int i = 0; i < 5; ++i) {
-                compute_cc (A, B, C, XA);
+                compute_Cc (A, B, C, XA);
             } 
             end = get_time ();
             break;
         case 3:
-            compute_rc (A, B, C, XA);
+            compute_Rc (A, B, C, XA);
             start = get_time ();
             for (int i = 0; i < 5; ++i) {
-                compute_rc (A, B, C, XA);
+                compute_Rc (A, B, C, XA);
             } 
             end = get_time ();
             break;
         case 4:
-            compute_cr (A, B, C, XA);
+            compute_Cr (A, B, C, XA);
             start = get_time ();
             for (int i = 0; i < 5; ++i) {
-                compute_cr (A, B, C, XA);
+                compute_Cr (A, B, C, XA);
             } 
             end = get_time ();
             break;
-        default:
-            compute_rc (A, B, C, XA);
+        case 5:
+            compute_cC (A, B, C, XA);
             start = get_time ();
             for (int i = 0; i < 5; ++i) {
-                compute_rc (A, B, C, XA);
+                compute_cC (A, B, C, XA);
+            } 
+            end = get_time ();
+            break;
+        case 6:
+            compute_rC (A, B, C, XA);
+            start = get_time ();
+            for (int i = 0; i < 5; ++i) {
+                compute_rC (A, B, C, XA);
+            } 
+            end = get_time ();
+
+        default:
+            compute_Rr (A, B, C, XA);
+            start = get_time ();
+            for (int i = 0; i < 5; ++i) {
+                compute_Rr (A, B, C, XA);
             } 
             end = get_time ();
         }
         printf ("SIZE\t\t\tCYCLES\n");
         printf ("%d\t\t\t%ld\n", XA, (end - start) / 5);
-//        matrix_print (C, XA, YB);
+        //matrix_print (C, XA, YB);
         matrix_free (C, XA, YB);
     }
 

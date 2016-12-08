@@ -1,10 +1,11 @@
 #!/bin/bash
 
 LIST=$(ls)
+FNAME=$1
 
 if [[ $2 -ne 0 ]]
 then
-    echo -e "SIZE\t\t\tCYCLES\n" > $1
+    echo -e "#SIZE\t\t\tCYCLES\n" > $FNAME
 fi
 
 for FILE in $LIST ; do
@@ -26,6 +27,6 @@ for FILE in $LIST ; do
         fi
 
     done
-    echo -e $OUTPUT >> $1
+    echo -e $OUTPUT >> $FNAME
 
 done
