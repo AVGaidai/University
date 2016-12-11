@@ -204,8 +204,9 @@ int main (int argc, char *argv[])
 {
     int opt, save = 0, compute = 0;
     char *fname = NULL;
+    char *fout = NULL;
 
-    while ((opt = getopt (argc, argv, "sc:n:f:")) != -1) {
+    while ((opt = getopt (argc, argv, "sc:n:f:o:")) != -1) {
         switch (opt) {
         case 'c':
             compute = atoi (optarg);
@@ -219,6 +220,10 @@ int main (int argc, char *argv[])
         case 'f':
             fname = (char *) malloc (strlen (optarg));
             memcpy (fname, optarg, strlen (optarg));
+            break;
+        case 'o':
+            fout = (char *) malloc (strlen (optarg));
+            memcpy (fout, optarg, strlen (optarg));
             break;
         default:
             printf ("Incorrect option\n");
@@ -321,7 +326,7 @@ int main (int argc, char *argv[])
                 compute_rC (A, B, C, XA);
             } 
             end = get_time ();
-
+            break;
         default:
             compute_Rr (A, B, C, XA);
             start = get_time ();
@@ -330,8 +335,15 @@ int main (int argc, char *argv[])
             } 
             end = get_time ();
         }
-        printf ("SIZE\t\t\tCYCLES\n");
-        printf ("%d\t\t\t%ld\n", XA, (end - start) / 5);
+	if (fout) {
+            FILE *out = fopen (fout, "wb");
+            fprintf (out, "SIZE\t\t\tCYCLES\n");
+            fprintf (out, "%d\t\t\t%ld\n", XA, (end - start) / 5);
+            fclose (out);
+	} else {
+            printf ("SIZE\t\t\tCYCLES\n");
+            printf ("%d\t\t\t%ld\n", XA, (end - start) / 5);
+        }
         //matrix_print (C, XA, YB);
         matrix_free (C, XA, YB);
     }
@@ -340,6 +352,7 @@ int main (int argc, char *argv[])
     matrix_free (B, XB, YB);
 
     if (fname) free (fname);
+    if (fout) free (fout);
 
     return 0;
 }

@@ -8,16 +8,6 @@
 #include <math.h>
 
 
-uint64_t get_time (void)
-{
-    uint32_t low, high;
-
-    __asm__ __volatile__ ( "rdtsc\n" : "=a" (low), "=d" (high) );
-
-    return ((uint64_t)high << 32) | low;
-}
-
-
 
 int sqrts (float *a, float *b, float *c, int size)
 {
@@ -53,8 +43,6 @@ int main (int argc, char *argv[])
 {
     int N = 1024;
 
-    uint64_t start, end;
-
     float *a, *b, *c;
 
     a = (float *) malloc (sizeof (float) * N);
@@ -68,12 +56,6 @@ int main (int argc, char *argv[])
 
     
     sqrts (a, b, c, N);
-    start = get_time ();
-    for (int i = 0; i < 5; ++i)
-        sqrts (a, b, c, N);
-    end = get_time ();
-
-    printf ("%ld cycles\n", (end - start) / 5);
 
 //    matrix_print (a, N);
 //    matrix_print (b, N);

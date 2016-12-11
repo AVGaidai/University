@@ -7,7 +7,9 @@ set ylabel "Cycles"
 set xtic 256
 
 
-plot "main_out_file_1.txt" using 1:2 w lp lc 1  title "rows rows",\
-     "main_out_file_2.txt" using 1:2 w lp lc 2  title "columns columns",\
-     "main_out_file_3.txt" using 1:2 w lp lc 3  title "rows columns",\
-     "main_out_file_4.txt" using 1:2 w lp lc 4  title "columns rows"
+plot "1.txt" using 1:2 w lp lc 1  title "Rows rows",\
+     "2.txt" using 1:2 w lp lc 2  title "Columns columns",\
+     "3.txt" using 1:2 w lp lc 3  title "Rows columns",\
+     "4.txt" using 1:2 w lp lc 4  title "Coluns rows",\
+     "5.txt" using 1:2 w lp lc 5  title "columns Columns",\
+     "6.txt" using 1:2 w lp lc 6  title "rows Columns"

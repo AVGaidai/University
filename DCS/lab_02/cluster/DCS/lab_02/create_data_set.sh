@@ -10,7 +10,7 @@ fi
 
 for FILE in $LIST ; do
 
-    if [[ $FILE != out_file.* ]]
+    if [[ $FILE != out_file_*.txt ]]
     then
         continue
     fi
