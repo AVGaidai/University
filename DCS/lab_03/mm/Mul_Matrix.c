@@ -71,16 +71,24 @@ void compute_Rr (int **A, int **B, int **C, int N)
 {
     for (int i = 0; i < N; ++i)
         bzero (C[i], N * sizeof (int));
+#pragma omp parallel 
+{
+    //printf ( "Hello, multithreaded world: thread %d of %d\n",
+    //         omp_get_thread_num(), omp_get_num_threads()      );
+    int i, j, k;
+    #pragma omp for private (j, k) //collapse (3)
 
-    for (int i = 0; i < N; ++i) {
-        for (int j = 0; j < N; ++j) {
-            for (int k = 0; k < N; ++k) {
+    for (i = 0; i < N; ++i) {
+        for (j = 0; j < N; ++j) {
+            for (k = 0; k < N; ++k) {
                 //printf ( "C[%d][%d] += A[%d][%d] * B[%d][%d]\n",
-                //         i, k, i, j, j, k                        );     
+                //         i, k, i, j, j, k                        );      
                 C[i][k] += A[i][j] * B[j][k];
             }
         }
     }
+}
+
 }
 
 
