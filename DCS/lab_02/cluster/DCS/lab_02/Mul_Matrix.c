@@ -332,12 +332,12 @@ int main (int argc, char *argv[])
             } 
             end = get_time ();
         }
-	if (fout) {
+    	if (fout) {
             FILE *out = fopen (fout, "wb");
             fprintf (out, "SIZE\t\t\tCYCLES\n");
             fprintf (out, "%d\t\t\t%ld\n", XA, (end - start) / 5);
             fclose (out);
-	} else {
+	    } else {
             printf ("SIZE\t\t\tCYCLES\n");
             printf ("%d\t\t\t%ld\n", XA, (end - start) / 5);
         }

@@ -77,7 +77,6 @@ void compute_Rr (int **A, int **B, int **C, int N)
     //         omp_get_thread_num(), omp_get_num_threads()      );
     int i, j, k;
     #pragma omp for private (j, k) //collapse (3)
-
     for (i = 0; i < N; ++i) {
         for (j = 0; j < N; ++j) {
             for (k = 0; k < N; ++k) {
@@ -340,12 +339,12 @@ int main (int argc, char *argv[])
             } 
             end = get_time ();
         }
-	if (fout) {
+	    if (fout) {
             FILE *out = fopen (fout, "wb");
             fprintf (out, "SIZE\t\t\tCYCLES\n");
             fprintf (out, "%d\t\t\t%ld\n", XA, (end - start) / 5);
             fclose (out);
-	} else {
+    	} else {
             printf ("SIZE\t\t\tCYCLES\n");
             printf ("%d\t\t\t%ld\n", XA, (end - start) / 5);
         }
