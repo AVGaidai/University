@@ -23,4 +23,6 @@ int main (int argc, char *argv[])
              processor_name, world_rank, world_size   );
 
     MPI_Finalize ();
+
+    return 0;
 }

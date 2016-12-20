@@ -1,7 +1,7 @@
 #PBS -N lab_04
-#PBS -l nodes=3:ppn8
+#PBS -l nodes=4:ppn1
 #PBS -j oe
 
 cd $PBS_O_WORKDIR
-mpiexec ./Mul_Matrix -s -n 1024 -f set_1.txt
-mpiexec ./Mul_Matrix -c -n 1024 -f set_1.txt -r out_file_x.txt
+mpiexec ./Mul_Matrix -s -n 2048 -f set_1.txt
+mpiexec ./Mul_Matrix -c -n 2048 -f set_1.txt -r out_file_x.txt

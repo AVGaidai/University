@@ -1,5 +1,5 @@
 #PBS -N lab_04
-#PBS -l nodes=1:ppn3
+#PBS -l nodes=3:ppn1
 #PBS -j oe
 
 cd $PBS_O_WORKDIR
