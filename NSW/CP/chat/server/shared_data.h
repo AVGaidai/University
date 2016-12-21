@@ -20,7 +20,7 @@ enum {
 
 #define NUM_OF_SERVERS   5
 
-#define CUR_SERVER       3
+#define CUR_SERVER       3 
 
 #define TIMEOUT_ACCEPT   60
 #define TIMEOUT_SEND     5
