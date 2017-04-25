@@ -7,4 +7,4 @@ all:
 	$(CC) $(CFLAGS) -o $(NAME).out $(NAME).c -lm
 
 clear:
-	rm -rf *.out data.txt
+	rm -rf *.out data.txt .experiment*

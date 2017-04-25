@@ -1,3 +1,5 @@
+#!/bin/bash
+
 lam=$1
 N=$2
 T=$3
@@ -21,13 +23,17 @@ do
 
     rm result.txt
     let j=0
-    while [[ $j -ne $((2*$T/$dt) ]] ;
+    command="scale=0; 2*$T/$dt"
+    cnt=$(bc <<< $command)
+    while [[ $j -ne $cnt ]] ;
     do
-	echo $file1[$j] >> result.txt
-	echo -e "\t" >> result.txt
-	echo $(($file1[$j+1]+$file2[$j+1])) >> result.txt
-	echo -e "\n" >> result.txt
-
+	v1=$file1[$j+1]
+	v2=$file2[$j+1]
+	echo $v1  $v2
+	command="scale=0; $v1+$v2"
+	val=$(bc <<< $command)
+	echo -e $file1[$j]'\t'$val >> result.txt
+	
 	let j=$j+2
     done
 done
@@ -35,13 +41,9 @@ done
 file1=$(cat result.txt)
 rm result.txt
 let j=0
-while [[ $j -ne $((2*$T/$dt) ]] ;
+while [[ $j -ne $cnt ]] ;
 do
-    echo $file1[$j] >> result.txt
-    echo -e "\t" >> result.txt
-    echo $(($file1[$j+1]/10)) >> result.txt
-    echo -e "\n" >> result.txt
+    echo -e $file1[$j]\t$(($file1[$j+1]/10)) >> result.txt
     let j=$j+2
 done
-
-
+rm -rf .experiment*
