@@ -67,11 +67,18 @@ function DCSFA(lam, mu, N, i, T, dt)
     hold on;
     grid on;
     M = (lam * N) / (lam + mu) + (i * mu - (N - i) * lam) / (lam + mu) * exp(-(lam + mu) .* t);
-    plot(t, M, ':', 'Color', [0 0 0], 'LineWidth', 2);
+    P1 = (N * lam * mu) / (lam + mu) ^ 2;
+    P2 = (lam ^ 2 * (N - i) + mu * (i * mu  - lam * N)) / (lam + mu) ^ 2 * exp(-(lam + mu) .* t);
+    P3 = (lam ^ 2 * (N - i) + i * mu ^ 2) / (lam + mu) ^ 2 * exp(-2 * (lam + mu) .* t);
+	D = P1 + P2 - P3;
+	F = M + sqrt(D);
+	plot(t, M, ':', 'Color', [0 0 0], 'LineWidth', 2);
+	hold on;
+	plot(t, F, '-.', 'Color', [0 0 0], 'LineWidth', 2);
     title(['N=' num2str(N) ', \lambda= ' num2str(lam) ', \mu=' num2str(mu) ', Experments=1000']);
     xlabel('time, hours');
     ylabel('failure');
-    legend('show', 'M(t)', 'M(t) + \sigma', 'M(t), analytical');
+    legend('show', 'M(t)', 'M(t) + \sigma', 'M(t), analytical', 'M(t) + \sigma, analytical');
     legend('Location','southeast');
     hold off;
 end
