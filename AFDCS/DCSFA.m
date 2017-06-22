@@ -70,11 +70,11 @@ function DCSFA(lam, mu, N, i, T, dt)
     P1 = (N * lam * mu) / (lam + mu) ^ 2;
     P2 = (lam ^ 2 * (N - i) + mu * (i * mu  - lam * N)) / (lam + mu) ^ 2 * exp(-(lam + mu) .* t);
     P3 = (lam ^ 2 * (N - i) + i * mu ^ 2) / (lam + mu) ^ 2 * exp(-2 * (lam + mu) .* t);
-	D = P1 + P2 - P3;
-	F = M + sqrt(D);
-	plot(t, M, ':', 'Color', [0 0 0], 'LineWidth', 2);
-	hold on;
-	plot(t, F, '-.', 'Color', [0 0 0], 'LineWidth', 2);
+    D = P1 + P2 - P3;
+    F = M + sqrt(D);
+    plot(t, M, ':', 'Color', [0 0 0], 'LineWidth', 2);
+    hold on;
+    plot(t, F, '-.', 'Color', [0 0 0], 'LineWidth', 2);
     title(['N=' num2str(N) ', \lambda= ' num2str(lam) ', \mu=' num2str(mu) ', Experments=1000']);
     xlabel('time, hours');
     ylabel('failure');
